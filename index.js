@@ -1,86 +1,125 @@
-
 let poly;
 let map;
 let line;
-let lines=[]
+let lines = [];
 
 function initMap() {
-  map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 14.5,
-    center: { lat: 26.3497945, lng: 43.7597994 }
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 15,
+    center: { lat: 26.3520000, lng: 43.7697994 }
   });
 
-  // poly = new google.maps.Polyline({
-  //   strokeColor: '#0f0000',
-  //   strokeOpacity: 1.0,
-  //   strokeWeight: 1
-  // });
-  // poly.setMap(map);
-
-  // Add a listener for the click event
-  // map.addListener('click', addLatLng);
-
-  for (const node of nodes) {
-    // console.log(node);
-  // addPath(latLng)
-  // console.log(node);
- addMarker(node)
-  for (const index of node.connectedPoints) {
-    let child=nodes.find(point => point.index === index)
-    // console.log(child,node);
-
-    let path=[
-      new google.maps.LatLng(node.lat, node.lng),
-      new google.maps.LatLng(child.lat, child.lng)
-    ]
-        addPath(path)
-        // getPath()
-
-  }
-
-
-
-
-  }
-}
-
-// Handles click events on a map, and adds a new point to the Polyline.
-
-function addPath(path) {
-  // var path = poly.getPath();
-  // let latLng=new google.maps.LatLng(node.lat, node.lng);
-  // console.log(line.getPath());
-   line = new google.maps.Polyline({
-    path: path,
-    strokeColor: "#000000",
+  line = new google.maps.Polyline({
+    strokeColor: "#0f0000",
     strokeOpacity: 1.0,
-    strokeWeight: 1,
-    map: map
-}
-);
-lines.push(line)
-// console.log("gg");
-
-// console.log(lines);
-
-
-  // Because path is an MVCArray, we can simply append a new coordinate
-  // and it will automatically appear.
-  // path.push(latLng);
-
-  // Add a new marker at the new plotted point on the polyline.
-
-}
-
-// console.log(data);
-function addMarker(node){
-  let latLng=new google.maps.LatLng(node.lat, node.lng);
-  let index=node.index
-  let title="["+node.index+"] "+node.name
-  var marker = new google.maps.Marker({
-    position: latLng,
-    title:title,
-    map: map,
-    label:index.toString(),
+    strokeWeight: 1
   });
+  line.setMap(map);
+  for (let i = 1; i < nodes.length; i++) {
+    let node = nodes[i];
+
+    addMarker(node);
+    for (const i of node.connectedPoints) {
+      let index = i.index;
+
+      let child = nodes.find(point => point.index === index);
+
+      let path = [
+        new google.maps.LatLng(node.lat, node.lng),
+        new google.maps.LatLng(child.lat, child.lng)
+      ];
+      addPath(path);
+    }
+  }
+}
+
+function addPath(path, color) {
+  let strokeColor = color ? color : "#000000",
+
+    line = new google.maps.Polyline({
+      path: path,
+      strokeColor: strokeColor,
+      strokeOpacity: 1.0,
+      strokeWeight: 2,
+      map: map
+    });
+  line.setMap(map);
+  lines.push(line);
+}
+
+function addMarker(node) {
+  let latLng = new google.maps.LatLng(node.lat, node.lng);
+  let index = node.index;
+  let title = "[" + node.index + "] " + node.name;
+  let marker = new google.maps.Marker({
+    position: latLng,
+    title: title,
+    map: map,
+    label: index.toString()
+  });
+}
+
+function drawPath(newPath) {
+  for (const Line of lines) {
+    Line.setMap(null);
+  }
+  lines = [];
+  for (let i = 1; i < nodes.length; i++) {
+    let node = nodes[i];
+
+    for (const i of node.connectedPoints) {
+      let index = i.index;
+      if (newPath.includes(index)) {
+        continue;
+      }
+      let child = nodes.find(point => point.index === index);
+
+      let path = [
+        new google.maps.LatLng(node.lat, node.lng),
+        new google.maps.LatLng(child.lat, child.lng)
+      ];
+      addPath(path);
+    }
+  }
+  let path = [];
+  for (const index of newPath) {
+    let node = nodes.find(point => point.index === index);
+
+    path.push(new google.maps.LatLng(node.lat, node.lng));
+  }
+  addPath(path, "#ff0000");
+}
+
+function setOptions() {
+  let StartOptions = document.getElementById("start");
+  let GoalOptions = document.getElementById("goal");
+  for (let i = 1; i < nodes.length; i++) {
+    let node = nodes[i];
+    let value = node.index;
+    let text = "[" + value + "] " + node.name;
+    let newOption = document.createElement("option");
+    newOption.value = value;
+    newOption.text = text;
+    StartOptions.appendChild(newOption);
+  }
+  for (let i = 0; i < nodes.length - 1; i++) {
+    let node = nodes[0][i];
+    if (!node) {
+      continue;
+    }
+    let value = i;
+    let name = nodes.find(point => point.index === i).name;
+    let text = "[" + value + "] " + name;
+    let newOption = document.createElement("option");
+    newOption.value = value;
+    newOption.text = text;
+    GoalOptions.appendChild(newOption);
+  }
+}
+setOptions();
+
+function travelBtn() {
+  let start = document.getElementById("start").value;
+  let goal = document.getElementById("goal").value;
+  AStar(start, goal);
 }
