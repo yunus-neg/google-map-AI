@@ -8,41 +8,30 @@
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
       #map {
-        height: 75%;
+        height: 100%;
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
         height: 100%;
-
+        margin: 0;
+        padding: 0;
       }
     </style>
   </head>
   <body>
     <div id="map"></div>
-    <br>
-    <center>
-    <form >
-        <label >Start</label>
-      <select id="start" >
-        <option disabled value="-1">Start</option>
-      </select>
-    </form>
-    <br>
-    <form >
-      <label >Goal</label>
-      <select id="goal" >
-        <option disabled value="-1">Goal</option>
-      </select>
-    </form>
-    <br>
-    <button onclick="travelBtn()">Travel</button>
-  </ceneter>
+    <script>
+
+      // This example creates an interactive map which constructs a polyline based on
+      // user clicks. Note that the polyline only appears once its path property
+      // contains two LatLng coordinates.
+
+    </script>
         <script src="qu.js"></script>
 
-        <script src="index.js"></script>
-        <script src="AStar.js"></script>
-        <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtIIaG8H4gBLgCMgiX3KafOBD6Q8KvPWA&callback=initMap">
+    <script src="index.js"></script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap">
     </script>
   </body>
 </html>
